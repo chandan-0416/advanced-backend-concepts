@@ -1,10 +1,6 @@
-# Docker
-- Dockerfile
- lines => layers -> cashing
- docker cash
- optimize the layers
+# advanced-backend-concepts" >> README.md >> Topics:
 
- # advanced-backend-concepts" >> README.md >> GitHub
+### GitHub Setup:
  - if you create github through command line
  ```
 git init
@@ -21,13 +17,15 @@ git branch -M main
 git push -u origin main
 ```
 
-
-
-#
-1. Port Mapping 
-- because docker container is isolated 
-- container's port(5000) ---> loacal machine's port(8000)
-- 
-2. How to push custom image on the docker hub?
-- 
-3. Docker Compose
+### Docker Topics:
+1. What problems solved by docker?
+2. What is Docker, Docker Desktop, Docker Image, Container, DockerHub ?
+3. Docker Commands
+4. How Docker works?
+5. How to dockerize any app?
+6. Dokerfile
+7. Port Mapping 
+8. How to push custom image on the docker hub?
+9. Docker Compose
+10. Docker Networking
+11. Docker Volume
