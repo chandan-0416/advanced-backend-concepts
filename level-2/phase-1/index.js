@@ -45,12 +45,12 @@ app.get("/get-with-redis", async (req, res)=>{
     return res.json(user)
 })
 
-app.post("/send-otp", async (tr))
+
 
 app.listen(port, ()=>{
     connectDb()
     console.log(`server started ${port}`)
 })
 
-// without redis 43 sec
-// with redis 
+// without redis 43 ms
+// with redis 6 ms
