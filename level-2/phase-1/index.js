@@ -52,5 +52,4 @@ app.listen(port, ()=>{
     console.log(`server started ${port}`)
 })
 
-// without redis 43 ms
-// with redis 6 ms
+// without redis 43 ms and with redis 6 ms
