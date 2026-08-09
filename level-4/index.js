@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import {ChatGoogleGenerativeAI} from "@langchain/google-genai";
 import { ChatGroq } from "@langchain/groq"
+import { Annotation, MessagesAnnotation, StateGraph} from "@langchain/langgraph";
+import { AIMessage } from "@langchain/core/messages";
+import {ToolNode} from "@langchain/langgraph/prebuilt"
 
 dotenv.config();
 const app = express();
@@ -46,9 +49,19 @@ const llm= new ChatGroq({
   maxRetries:2,
 })
 
-app.post("/ai", async (req, res) => {
-  const { input } = req.body
-   
+//custom state
+// const State = Annotation.Root({
+//   prompt:Annotation,
+//   AIMessage:Annotation
+// });
+
+//toolNodes
+const tools = [];
+const toolNode= new ToolNode(tools);
+
+const callLLM = async (state)=>{
+
+  console.log("state:", state)
   const response = await llm.invoke([
     {
       role:"system",
@@ -56,11 +69,39 @@ app.post("/ai", async (req, res) => {
     },
     {
       role:"human",
-      content:input
+      content:state.messages[0].content
     }
   ])
 
-  return res.status(200).json({ "ai:": response.content });
+  return {messages:[response]}
+}
+
+const shouldContinue = async (state) =>{
+
+}
+
+//Nodes and Edges
+const graph = new StateGraph(MessagesAnnotation)
+.addNode("agent",callLLM)
+.addNode("tools",toolNode)
+.addEdge("__start__","agent")
+.addEdge("tools","agent")
+.addConditionalEdges("agent",shouldContinue)
+// .addEdge("agent","__end__")
+.compile()
+
+app.post("/ai", async (req, res) => {
+  const { input } = req.body
+
+  const response= await graph.invoke({messages:[
+      {  
+       role:"user",
+        content:input
+      }
+  ]})
+  console.log(response)
+   
+  return res.status(200).json({ "ai:": response.messages[response.messages.length-1].content});
 });
 
 app.get("/", (req, res) => {
