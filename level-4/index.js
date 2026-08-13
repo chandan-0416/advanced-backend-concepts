@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import {ChatGoogleGenerativeAI} from "@langchain/google-genai";
 import { ChatGroq } from "@langchain/groq"
-import { Annotation, MessagesAnnotation, StateGraph, START, END} from "@langchain/langgraph";
+import { Annotation, MessagesAnnotation, StateGraph, START, END, MemorySaver} from "@langchain/langgraph";
 import { AIMessage } from "@langchain/core/messages";
 import {ToolNode} from "@langchain/langgraph/prebuilt"
 import { TavilySearch } from "@langchain/tavily";
@@ -44,10 +44,13 @@ app.use(express.json());
 
 //Tavily Search tools for web Search
 const tool = new TavilySearch({
-  maxResults: 2,
+  maxResults: 5,
   topic: "general",
  
 });
+
+//Memori Saver in Langchain
+const checkPointer = new MemorySaver()
 
 //toolNodes
 const tools = [tool];
@@ -55,8 +58,8 @@ const toolNode= new ToolNode(tools);
 
 const llm= new ChatGroq({
   model:"openai/gpt-oss-120b",
-  temperature:2,
-  maxTokens:150,
+  temperature:0.7,
+  maxTokens:500,
   maxRetries:2,
 }).bindTools(tools)
 
@@ -72,14 +75,11 @@ const callLLM = async (state)=>{
   const response = await llm.invoke([
     {
       role:"system",
-      content:"you are AI"
+      content:`You are a helpful and accurate AI assistant.
+                If you do not know the answer, clearly say that you don't know the answer then call relevent tools. `
     },
-    {
-      role:"human",
-      content: state.messages[0].content
-    }
+     ...state.messages
   ])
-
   return {messages:[response]}
 }
 
@@ -100,18 +100,22 @@ const graph = new StateGraph(MessagesAnnotation)
 .addEdge("tools","agent") // tools connect with agent
 .addConditionalEdges("agent",shouldContinue) // two conditional edges - shouldContinue
 // .addEdge("agent","__end__")
-.compile()
+.compile({checkpointer:checkPointer})
 
 app.post("/ai", async (req, res) => {
   const { input } = req.body
 
-  const response= await graph.invoke({messages:[ //graph invoke
+  const response= await graph.invoke(
+    {messages:[
       {  
        role:"user",
         content:input
       }
-  ]})
-  console.log(response)
+  ]},
+  {
+    configurable:{thread_id:"user123"}}
+)
+  console.log(response.messages)
    
   return res.status(200).json({ "ai:": response.messages[response.messages.length-1].content});
 });

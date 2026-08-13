@@ -1,6 +1,6 @@
 1. npm list @google/genai
+2. 2. Git command
 ```
-2. Git command
 - PS C:\Users\chand\OneDrive\Desktop\Advanced Backend Course> git status
 - PS C:\Users\chand\OneDrive\Desktop\Advanced Backend Course> git stash 
 - PS C:\Users\chand\OneDrive\Desktop\Advanced Backend Course> git stash pop
