@@ -13,12 +13,14 @@
 - Docker Networking
 - Docker Volumes
 
-2. Level-2 : Redis | Use Cases
-- API Caching -> products/users
-- OTP Storage -> temporary OTP
-- Session -> login
-- Rate Limiting -> API Protection
-- Queues -> Queues
+2. Level-2 : Redis
+- without redis
+- with redis
+- use case: API Caching -> products/users 
+- use case: OTP Storage -> temporary OTP
+- use case: Session -> login
+- use case: Rate Limiting -> API Protection
+- use case: Queues -> Queue - BullMQ
 - AI Memory - chatbot history
 
 3. Level-3 : System Design
