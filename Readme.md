@@ -46,4 +46,4 @@
 - S3 
 - ECS
 - ECR
-6. Level-6 : CI/CD Pipelines
+- CI/CD Pipelines (GitHub Action)
